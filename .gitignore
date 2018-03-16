@@ -1,0 +1,66 @@
+ngt-eat/src/main/resources
+eat/src/main/resources
+classes
+
+Compiled/*
+recent_proto/*
+protocols.jar
+*.desc
+
+
+target/
+*.idea
+*.log
+*.iml
+
+*/*.lst
+*.class
+
+run/config.json
+
+# Mobile Tools for Java (J2ME)
+.mtj.tmp/
+
+# Package Files #
+*.war
+*.ear
+
+#Open Source Work
+resources_deploy/
+extraLibrary/
+
+# virtual machine crash logs, see http://www.java.com/en/download/help/error_hotspot.xml
+hs_err_pid*
+eat/extraLibrary/_remote.repositories
+eat/extraLibrary/space-0.2.40.00.jar
+eat/extraLibrary/tardis-0.2.10.jar
+
+# =============== #
+# Unity generated #
+# =============== #
+[Tt]emp/
+[Oo]bj/
+[Bb]uild
+/[Bb]uilds/
+/[Ll]ibrary/
+sysinfo.txt
+*.stackdump
+*.apk
+ 
+# ===================================== #
+# Visual Studio / MonoDevelop generated #
+# ===================================== #
+[Ee]xported[Oo]bj/
+.vs/
+/*.userprefs
+/*.csproj
+/*.pidb
+*.pidb.meta
+/*.suo
+/*.sln*
+/*.user
+/*.unityproj
+/*.booproj
+.consulo/
+/*.tmp
+/*.svd
