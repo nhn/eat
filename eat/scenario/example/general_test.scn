@@ -1,0 +1,23 @@
+
+
+#Request:[GENERAL]Login
+{
+    "id" : "ThisIsID",
+    "gameId" : "ThisIsGameID"
+}
+
+#Response:[GENERAL]LoginResponse
+{
+    "resultType":"SUCCESS"
+}
+
+#Request:[GENERAL]EnterLobby
+{
+    "gameChannel" : "102030"
+}
+
+#Response:[GENERAL]EnterLobbyResponse
+{
+
+}
+

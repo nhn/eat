@@ -1,0 +1,95 @@
+{
+  "common": {
+    "rootDirectory": "/home/jskim/work/eat/eat/eat",
+    "ignoreUnnecessaryPacket": true,
+    "countOfRealThread": 20,
+    "loggingOnSameFile": false,
+    "receiveTimeoutSec": 3000
+  },
+  "display": {
+    "displayTransferredPacket": true,
+    "displayTransferredPacketJson": true,
+    "displayUnitTestResult": true,
+    "displayFinalTestResult": true,
+    "displayStatisticResult": true,
+    "displayFinalStatisticResult": true
+  },
+
+  //  Comment) If you want to use JMX,
+  //  you can set configuration like the following.
+  //
+  //  "jmxConfig": {
+  //    "mBeanFilePath" : "[MBean File Path such as ./extraLibrary/qa-0.1.0.jar]",
+  //    "mBeanName" : "QaTestAPIMBean",
+  //    "endPointName": "com.nhnent.msg.manager:type=QaTestAPI",
+  //    "ipAddress": "10.78.14.40",
+  //    "port": 26000
+  //  },
+
+  //  Comment) If you want to use backdoor(of server) to test,
+  //  you can set configuration like the following.
+  //
+  //  "qaService": {
+  //    "endPointName": "com.nhnent.eat.manager:type=QaTestAPI",
+  //    "ipAddress": "10.78.14.40",
+  //    "port": 26000
+  //  },
+
+  "server": {
+    "ip": "127.0.0.1",
+    "port": 11200,
+    "countOfPort": 1,
+    "socketType": "STREAM", //It can be STREAM or WEBSOCKET
+    //subUriOfWS is used for WEBSOCKET,
+    //ex.) in case of ws://10.77.95.238:11400/tardis, tardis is subUriOfWS
+    "subUriOfWS": "tardis"
+  },
+  "packet": {
+    "pluginPackage": "/home/jskim/work/eat/eat/eat/extraLibrary/protobuf_plugin-0.1.1.jar",
+    "classPackage": "/home/jskim/work/eat/eat/eat/proto/protocols.jar",
+    "pluginClass": "com.nhnent.eat.plugin.protobuf.ProtoBufPacket",
+    "bytePacketTypes": ["payload", "packetBytes", "data"],
+    "packetPackages": [
+      {
+        "key": "TUTORIAL",
+        "packageName": "tutorial"
+      }
+    ]
+  },
+  "protobuf": {
+    "protobufLibraryJarPath" : "/proto/protobuf-java-3.0.0.jar",
+    "serviceId": "TUTORIAL",
+    "headerPackageClassName": "tutorial.Basic", //[Package].[Class] which contains Header(inner Class)
+
+    //If your system is set with java8, `jav8BinPath` can be ommitted,
+    //But if not, active the `jav8BinPath` and set path of `~/java8/bin` like the following example
+    //"java8BinPath": "/Library/Java/JavaVirtualMachines/jdk1.8.0_152.jdk/Contents/Home/bin",
+
+    "protoBufInfos": [
+      {
+        "key": "TUTORIAL",
+        "originProtoDirPath": "/home/jskim/work/eat/eat/eat/proto",
+        "protobufFiles": [
+          "basic.proto"
+        ]
+      }
+    ]
+  },
+  "customScenarioAPI": {
+    "use": true,
+    "jarFile": "/home/jskim/work/eat/eat/eat/extraLibrary/sampleCustomAPI-1.0.jar",
+    "apiClassName": "com.nhnent.eat.sampleCustomAPI.customAPI"
+  },
+  "scenario": {
+    "scenarioPath": "/home/jskim/work/eat/eat/eat/scenario",
+    "playerCount": 1,
+    "testActorStartGap": 100, //Millisecond which executes sleep between tester actor starting
+    "userId": [
+      "4000"
+    ],
+    "scenarioFile": [
+      "example/protobuf_test.scn"
+    ]
+  }
+}
+

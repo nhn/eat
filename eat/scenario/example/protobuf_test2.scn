@@ -1,0 +1,13 @@
+
+#PRINT START: protobuf_test2.scn
+
+#Request:[TUTORIAL]Basic.RequestGameDecision
+{
+    "decision" : 2
+}
+
+#Response:[TUTORIAL]Basic.ResponseGameResult
+{
+}
+
+#PRINT END: protobuf_test2.scn

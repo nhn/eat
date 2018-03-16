@@ -1,0 +1,76 @@
+{
+  "common": {
+    "rootDirectory": "D:/Work/Architect/EAT/eat",
+    "ignoreUnnecessaryPacket": true,
+    "countOfRealThread": 20,
+    "loggingOnSameFile": false,
+    "receiveTimeoutSec": 3000
+  },
+  "display": {
+    "displayTransferredPacket": true,
+    "displayTransferredPacketJson": true,
+    "displayUnitTestResult": true,
+    "displayFinalTestResult": true,
+    "displayStatisticResult": true,
+    "displayFinalStatisticResult": true
+  },
+
+  //  Comment) If you want to use JMX,
+  //  you can set configuration like the following.
+  //
+  //  "jmxConfig": {
+  //    "mBeanFilePath" : "[MBean File Path such as ./extraLibrary/qa-0.1.0.jar]",
+  //    "mBeanName" : "QaTestAPIMBean",
+  //    "endPointName": "com.nhnent.msg.manager:type=QaTestAPI",
+  //    "ipAddress": "10.78.14.40",
+  //    "port": 26000
+  //  },
+
+  //  Comment) If you want to use backdoor(of server) to test,
+  //  you can set configuration like the following.
+  //
+  //  "qaService": {
+  //    "endPointName": "com.nhnent.eat.manager:type=QaTestAPI",
+  //    "ipAddress": "10.78.14.40",
+  //    "port": 26000
+  //  },
+
+  "server": {
+    "ip": "127.0.0.1",
+    "port": 11200,
+    "countOfPort": 1,
+    "socketType": "STREAM", //It can be STREAM or WEBSOCKET
+    //subUriOfWS is used for WEBSOCKET,
+    //ex.) in case of ws://10.77.95.238:11400/tardis, tardis is subUriOfWS
+    "subUriOfWS": "tardis"
+  },
+  "packet": {
+    "pluginPackage": "./extraLibrary/generalPacket_plugin-0.1.1.jar",
+    "classPackage": "./extraLibrary/generalPacket_sampleserver-1.0.jar",
+    "pluginClass": "com.nhnent.eat.plugin.generalPacket.GeneralPacket",
+    "bytePacketTypes": ["payload", "packetBytes", "data"],
+    "packetPackages": [
+      {
+        "key": "GENERAL",
+        "packageName": "com.nhnent.generalPacket.packets"
+      }
+    ]
+  },
+  "customScenarioAPI": {
+    "use": false,
+    "jarFile": "sampleCustomAPI-1.0.jar",
+    "apiClassName": "com.nhnent.eat.sampleCustomAPI.customAPI"
+  },
+  "scenario": {
+    "scenarioPath": "./scenario",
+    "playerCount": 100,
+    "testActorStartGap": 100, //Millisecond which executes sleep between tester actor starting
+    "userId": [
+      "4000"
+    ],
+    "scenarioFile": [
+      "example/general_test.scn"
+    ]
+  }
+}
+

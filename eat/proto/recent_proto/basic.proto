@@ -1,0 +1,78 @@
+syntax = "proto3";
+
+package tutorial;
+
+message Header
+{
+	int32	 body_size	= 1;
+	string	 msg_name	= 2;
+	string  service   = 3;
+	string  subid     = 4;
+	int32	 seq	    = 5;
+	int32   timeout   = 6;
+
+    int32   uncompress_size = 7;
+}
+
+enum ResultType
+{
+    SUCCESS = 0;
+    FAIL = 1;
+}
+
+message UserInfo
+{
+	string user_id = 1;  // 재경기 아님.
+	string user_name = 2;
+}
+
+message RequestLogin
+{
+    string user_id = 1;
+    string password = 2;
+}
+
+message ResponseLogin
+{
+    UserInfo result_user_info   = 1;
+
+    ResultType result_type      = 2;
+}
+
+message RequestStartGame
+{
+
+}
+
+message ResponseStartGame
+{
+    ResultType result_type  = 1;
+}
+
+message RequestGameDecision
+{
+    int32   decision    = 1;
+}
+
+message ResponseGameResult
+{
+    int32 turn = 1;
+
+    int32 player_score = 2;
+    int32 player_combo = 3;
+    int32 bot_score = 4;
+    int32 bot_combo = 5;
+
+
+    enum GameResult
+    {
+        WIN = 0;
+        LOSE = 1;
+        DRAW = 2;
+    }
+
+    GameResult gameResult = 7;
+
+    int32 player_decision = 8;
+    int32 bot_decision = 9;
+}

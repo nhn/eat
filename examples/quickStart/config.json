@@ -1,0 +1,72 @@
+{
+  "common": {
+    "rootDirectory": "D:/WORK/04.EAT/src/eat",
+    "ignoreUnnecessaryPacket": true,
+    "countOfRealThread": 20,
+    "loggingOnSameFile": false,
+    "receiveTimeoutSec": 5
+  },
+  "display": {
+    "displayTransferredPacket": true,
+    "displayTransferredPacketJson": true,
+    "displayUnitTestResult": true,
+    "displayFinalTestResult": true,
+    "displayStatisticResult": true,
+    "displayFinalStatisticResult": true
+  },
+
+  "server": {
+    "ip": "127.0.0.1",
+    "port": 11200,
+    "countOfPort": 1,
+    "socketType": "STREAM", //It can be STREAM or WEBSOCKET
+    //subUriOfWS is used for WEBSOCKET,
+    //ex.) in case of ws://10.77.95.238:11400/tardis, tardis is subUriOfWS
+    "subUriOfWS": "tardis"
+  },
+
+  "packet": {
+    "pluginPackage": "D:/WORK/04.EAT/src/eat/extraLibrary/protobuf_plugin-0.1.1.jar",
+    "classPackage": "D:/WORK/04.EAT/src/eat/proto/protocols.jar",
+    "pluginClass": "com.nhnent.eat.plugin.protobuf.ProtoBufPacket",
+    "bytePacketTypes": ["payload", "packetBytes", "data"],
+    "packetPackages": [
+      {
+        "key": "TUTORIAL",
+        "packageName": "tutorial"
+      }
+    ]
+  },
+  "protobuf": {
+    "protobufLibraryJarPath" : "./proto/protobuf-java-3.0.0.jar",
+    "serviceId": "TUTORIAL",
+    "headerPackageClassName": "tutorial.Basic",
+
+    "protoBufInfos": [
+      {
+        "key": "TUTORIAL",
+        "originProtoDirPath": "D:\\tmp\\proto",
+        "protobufFiles": [
+          "basic.proto"
+        ]
+      }
+    ]
+  },
+  "customScenarioAPI": {
+    "use": false,
+    "jarFile": "D:/WORK/04.EAT/src/eat/extraLibrary/sampleCustomAPI-1.0.jar",
+    "apiClassName": "com.nhnent.eat.sampleCustomAPI.customAPI"
+  },
+  "scenario": {
+    "scenarioPath": "D:/WORK/04.EAT/src/eat/scenario",
+    "playerCount": 3,
+    "testActorStartGap": 10, //Millisecond which executes sleep between tester actor starting
+    "userId": [
+      "4000"
+    ],
+    "scenarioFile": [
+      "example/protobuf_test.scn"
+    ]
+  }
+}
+

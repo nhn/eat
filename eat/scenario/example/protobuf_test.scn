@@ -1,0 +1,37 @@
+
+--DECLARE common value
+@@CMM_VAR@@ password = pwd123
+
+#Request:[TUTORIAL]Basic.RequestLogin
+{
+    "user_id" : "test123",
+    "password" : "@@password"
+}
+
+#FUNCTION @@UserNickname=getUserNickname()
+
+#Request:[TUTORIAL]Basic.RequestStartGame
+{
+}
+
+#Response:[TUTORIAL]Basic.ResponseStartGame
+{
+    "resultType":"SUCCESS"
+}
+
+#include=example/protobuf_test2.scn
+
+#BEGIN_LOOP 10
+
+    #Request:[TUTORIAL]Basic.RequestGameDecision
+    {
+        "decision" : 2
+    }
+
+    #Response:[TUTORIAL]Basic.ResponseGameResult
+    {
+    }
+
+    #SLEEP 300
+
+#END_LOOP

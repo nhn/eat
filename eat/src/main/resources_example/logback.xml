@@ -1,0 +1,61 @@
+<configuration debug="true" scan="true" scanPeriod="30 seconds">
+    <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <!-- We output the timezone for disambiguation across the different environments. -->
+            <pattern>[%d{ISO8601} %d{Z}][%X{strand}][%X{playerId}] [%highlight(%level)] %msg%n</pattern>
+        </encoder>
+    </appender>
+
+
+    <appender name="FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <!-- rollover daily -->
+            <fileNamePattern>log/eat.%d{yyyy-MM-dd}.%i.log</fileNamePattern>
+            <timeBasedFileNamingAndTriggeringPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
+                <!-- or whenever the file size reaches 100MB -->
+                <maxFileSize>10MB</maxFileSize>
+            </timeBasedFileNamingAndTriggeringPolicy>
+
+            <!-- maximum number of archive files to keep, deleting older files. For example, if you specify monthly rollover, and set maxHistory to 6, then 6 months worth of archives files will be kept with files older than 6 months deleted. -->
+            <maxHistory>100</maxHistory>
+
+        </rollingPolicy>
+
+        <encoder>
+            <!-- We output the timezone for disambiguation across the different environments. -->
+            <pattern>[%d{ISO8601} %d{Z}][%X{strand}][%X{playerId}] [%level] [%logger{10}] %msg%n</pattern>
+        </encoder>
+    </appender>
+
+    <!--<appender name="SIFT" class="ch.qos.logback.classic.sift.SiftingAppender">-->
+    <!--&lt;!&ndash; in the absence of the class attribute, it is assumed that the-->
+    <!--desired discriminator type is-->
+    <!--ch.qos.logback.classic.sift.MDCBasedDiscriminator &ndash;&gt;-->
+    <!--<discriminator>-->
+    <!--<key>logfileName</key>-->
+    <!--<defaultValue>initialize</defaultValue>-->
+    <!--</discriminator>-->
+    <!--<sift>-->
+    <!--<appender name="FILE-${logfileName}" class="ch.qos.logback.core.FileAppender">-->
+    <!--<file>log/${logfileName}.log</file>-->
+    <!--<append>false</append>-->
+    <!--<layout class="ch.qos.logback.classic.PatternLayout">-->
+    <!--<pattern>[%X{playerId}][%d{ISO8601} %d{Z}] [%level] %msg%n</pattern>-->
+    <!--</layout>-->
+    <!--</appender>-->
+    <!--</sift>-->
+    <!--</appender>-->
+
+    <appender name="ASYNC" class="ch.qos.logback.classic.AsyncAppender">
+        <appender-ref ref="FILE" />
+    </appender>
+
+
+
+    <root>
+        <level value="INFO"/>
+        <appender-ref ref="ASYNC"/>
+        <appender-ref ref="STDOUT"/>
+    </root>
+</configuration>

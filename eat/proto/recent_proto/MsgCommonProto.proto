@@ -1,0 +1,523 @@
+syntax = "proto3";
+
+package com.nhnent.msg.protocol;
+
+//----------------------------------------------------------------------------------------------------------------------
+// enum
+enum eRoomState
+{
+	NONE                  = 0;
+	WAITING               = 1;
+	START_GAME            = 2;
+	OPEN_CARD             = 3;
+	DEAL_CARD             = 4;
+	BET_PREV              = 5;
+	BET_FIRST             = 6;
+	BET_SECOND            = 7;
+	SELECT_HANDSTRENGTH   = 8;
+	REMATCH               = 9;
+	RESULT                = 10;
+}
+
+enum ePlayerType
+{
+	PLAYER_TYPE_NONE     = 0;    // 아직 설정되지 않은 상태.
+	PLAYER_TYPE_PLAYER   = 1;    // 게임중인 플레이어.
+	PLAYER_TYPE_WAITER   = 2;    // 게임에 참여 대기 중인 플레이어 (게임 중간에 참여한 유저)
+	PLAYER_TYPE_OBSERVER = 3;    // 관람객.
+}
+
+enum eRematchType
+{
+	REMATCH_NONE	= 0;    // 재경기 아님.
+	REMATCH_GUSA 	= 1;    // 구사 재경기.
+	REMATCH_DRAW 	= 2;    // 동점 재경기.
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+// using Lobby
+
+// 로그인시 클라이언트에서 서버로 전송하는 유저 정보
+message UserLoginInfo
+{
+	string store_type	=	1;	// 스토어 타입. GG, KG
+}
+
+message LoginResult
+{
+	enum eRetCode
+	{
+		RET_OK	         				= 0;    // 로그인 성공.
+		RET_FAIL               			= 1;    // 로그인 실패.
+		RET_RELOGIN_LOBBY				= 2;	// 재로그인 로비에 있는 상태.
+		RET_RELOGIN_ROOM				= 3;	// 재로그인 룸 안에 있는 상태.
+		RET_CREATE		    			= 4;    // 최초 로그인. 유저 생성이 필요.
+		RET_UNDER_AGE           		= 5;	// 만 18세 미만 금지.
+		RET_LOGIN_DUPLICATED    		= 6;	// 이중접속.
+		RET_INVALID_AUTH_INFO			= 7;	// 잘못된 인증 정보.
+		RET_UNREGISTER_ACCOUNT          = 8;    // 탈퇴된 계정.
+	}
+
+	eRetCode	ret_code	= 1;	// 로그인 성공 여부.
+	string		reason		= 2;	// 실패 이유.
+}
+
+message UserInfo
+{
+    string  sno 						= 1;    // 게임 sno, server 에서는 user id 로 통일.
+    string  user_id 					= 2;    // 유저 아이디.
+	string	oauth_provider				= 3;	// ID Provider
+	string	hangame_id					= 4;	// 한게임 아이디.
+	string  nickname 					= 5;	// 유저 닉네임.
+	int32	avatar_id 					= 6;	// 아바타 아이디. item의 value
+	int32   level 						= 7;	// 보유머니에 따른 등급.
+	int64	jewel						= 8;	// 보석.
+	int64	coin						= 9;	// 코인.
+	int64	game_money					= 10;	// 게임머니.
+	int64	limit_game_money			= 11;	// 게임머니 최고 보유 가능 한도액.
+	int64	register_date				= 12;	// 가입일.
+	int64	last_date					= 13;	// 최근 접속 일자.
+	int64   safe_money          		= 14;   // 금고머니
+	int64   limit_safe_money    		= 15;   // 금고머니 최대 입금 가능 한도액
+	string  tno                 		= 16;   // tno, 포커 연동시 사용되는 user key
+	bool	is_buy_over_age				= 17;	// 상품 구매 가능 연령(만 19세)이 지났는가. 참고> 게임 가능 연령은 만 18세.
+	int64   certification_expire_time	= 18;   // 본인 인증 만료 시간.
+}
+
+message HandCount
+{
+	int32	count_38_KWANGDDANG		= 3;	// 38 광땡 카운트.
+	int32	count_18_KWANGDDANG		= 4;	// 18 광땡 카운트.
+	int32	count_13_KWANGDDANG		= 5;	// 13 광땡 카운트.
+	int32	count_10_DDANG			= 6;	// 장땡 카운트.
+	int32	count_9_DDANG			= 7;	// 9땡 카운트.
+	int32	count_8_DDANG			= 8;	// 8땡 카운트.
+	int32	count_7_DDANG			= 9;	// 7땡 카운트.
+	int32	count_6_DDANG			= 10;	// 6땡 카운트.
+	int32	count_5_DDANG			= 11;	// 5땡 카운트.
+	int32	count_4_DDANG			= 12;	// 4땡 카운트.
+	int32	count_3_DDANG			= 13;	// 3땡 카운트.
+	int32	count_2_DDANG			= 14;	// 2땡 카운트.
+	int32	count_1_DDANG			= 15;	// 1땡 카운트.
+}
+
+message HandRecord
+{
+	int64		max_game_money	= 1;	// 최고 보유 게임머니.
+	int64		max_win_money	= 2;	// 최고 한판 획득 머니.
+	HandCount	hand_count_2	= 3;	// 2장 섯다 족보 기록.
+	HandCount	hand_count_3	= 4;	// 3장 섯다 족보 기록.
+}
+
+message GameRecord
+{
+	int32		match_count			= 1;	// 전체 경기수.
+	int32		win_count			= 2;	// 승리한 경기수.
+	int32		defeat_count		= 3;	// 패배한 경기수.
+	HandRecord	hand_record			= 4;	// 게임머니 및 족보 기록.
+}
+
+message ItemInfo
+{
+	int64	item_sid		= 1;	// 아이템 sequence id
+	int32	item_id			= 2;	// 아이템 ID
+	int32	item_type		= 3;	// 아이템 타입.
+	string  item_name       = 4;    // 아이템 이름
+	int32   inven_category  = 5;    // 인벤토리 카테고리
+	int64   value           = 6;    // 아바타인경우 아바타 인덱스, 1조클럽 의 경우 한도, 캐릭터 사용권의 경우 사용연장 기간(시간)
+	int64	quantity		= 7;	// 수량 (아이템일 경우 개수, 머니일 경우 금액)
+	int32	use_count		= 8;	// 사용한 개수.
+	int64 	register_date	= 9;	// 아이템 획득 일자.
+	int64 	start_date		= 10;	// 아이템 사용 시작 일자.
+	int64	expire_date		= 11;	// 만료 일자.
+	bool	is_using		= 12;	// 사용중인지.
+	bool    isFree          = 13;   // 유/무료 구분(보석, 머니인 경우)
+	bool    isActive        = 14;   // 아바타 활성화, 비활성화
+}
+
+message MailInfo
+{
+	enum eMailCategory {
+		NONE		= 0;
+		NOTICE		= 1;
+		GIFT		= 2;
+		EVENT		= 3;
+		SHOP        = 4;
+	}
+
+	enum eChecked {
+	    NEW          = 0;
+	    READ         = 1;
+	    COMPLETE     = 2;
+	}
+
+	int64	mail_sid		= 1;	// 아이템 sequence id.
+	string	sender			= 2;	// 보내는 사람 혹은 시스템.
+	int32	mail_category	= 3;	// 메일 카테고리 (선물, 이벤트, 공지).
+	string  mail_title      = 4;    // 메시지의 타이틀.
+	string	content			= 5;	// 상세 내용.
+	ItemInfo item_info      = 6;    // 선물함에 보내진 아이템 정보.
+	int64 	register_date	= 7;	// 등록 일자.
+	int64	expire_date		= 8;	// 만료 일자.
+	int32 	checked			= 9;	// 0: 신규, 1: 읽음, 2: 완료.
+    string  linkURL         = 10;   // 공지 메시지의 Link URL.
+	string	button_text		= 11;	// 버튼에 노출될 텍스트.
+	string	title_text		= 12;	// linkURL이 호출될때 표시될 타이틀
+}
+
+enum eInvenCategory
+{
+	eInvenCategory_NONE 		= 0;
+	eInvenCategory_ITEM 		= 1;
+	eInvenCategory_AVATAR 		= 2;
+	eInvenCategory_RARE_AVATAR 	= 3;
+	eInvenCategory_COUNT        = 99; // 카테고리에 보이지 않고 수량만 표시된다.
+}
+
+// 상점 관련 enum
+message ShopEnum
+{
+	enum eItemType
+	{
+		eItemType_NONE						= 0;
+		eItemType_GAME_MONEY    		    = 1;  // 게임 머니
+		eItemType_COIN          		    = 2;  // 코인
+		eItemType_JEWEL         		    = 3;  // 보석
+		eItemType_GACHA_TICKET  		    = 4;  // 뽑기 티켓
+		eItemType_ATTENDANCE    		    = 5;  // 출석 아이템
+		eItemType_AVATAR        		    = 6;  // 아바타
+		eItemType_TRILLION_CLUB 		    = 7;  // 1조 클럽
+		eItemType_VIP_DEALER   				= 8;  // 수행 딜러
+		eItemType_SAFE_MONEY_EXPANSION    	= 9;  // 금고 확장
+		eItemType_AVATAR_EMPLOY     		= 10; // 아바타 사용권
+	}
+
+	enum ePayType
+	{
+		ePayType_NONE 	= 0;
+		ePayType_GAME_MONEY  	= 1;    // 게임머니로 결제
+		ePayType_COIN        	= 2;    // 코인으로 구매
+		ePayType_JEWEL       	= 3;    // 보석으로 구매
+		ePayType_CASH        	= 99;   // 현금 결제
+	}
+}
+
+// 상품 구매시 지급할 아이템 정보
+message ShopItemInfo
+{
+	string product_id    	= 1;    // 아이템이 속한 상품 아이디
+	int32 item_type     	= 2;    // 아이템 타입
+	int64 count         	= 3;    // 지급 수량
+	string extra_data		= 4;	// json data
+}
+
+// 판매중인 상품의 정보
+message ShopProductInfo
+{
+	string product_id				=   1;  // 상품 아이디
+	string product_name         	=   2;  // 상품명
+	int32 pay_type              	=   3;  // 결제타입
+	int64 pay_price             	=   4;  // 구매가격
+	int64 start_time             	=   5;  // 상품 판매 시작 timestamp
+	int64 end_time               	=   6;  // 상품 판매 완료 timestamp
+	string extra_data				=	7;  // json data
+
+	repeated ShopItemInfo shop_item_info_list = 8;	// 클라에서 상품 구매 전, 구매 가능 상품인지 체크하는 로직에 아이템 정보 필요
+}
+
+// 히든 상품 정보
+message HiddenProductInfo
+{
+	int64 expire_time				= 1;   // 히든 상품 만료 timestamp. 상품 판매 완료 시간과는 다르다.
+	ShopProductInfo product_info 	= 2;   // 히든 상품 정보
+}
+
+// 이벤트 통합 정보
+message EventInfo
+{
+	string event_id     = 1; // event id
+	string info_type    = 2; // 각 event 별로 분기 처리 가능한 event info type
+	string info         = 3; // 기타 json data
+}
+
+// 서비스 정보 (이벤트 통합 정보와 비슷한 용도)->다양한 서비스에서 사용 가능
+message ServiceInfo
+{
+	string info_name		= 1; // 서비스 정보 이름
+	string info			    = 2; // json data,  서비스 상세 데이터를 자유롭게 정의하여 사용
+}
+
+// 상품 구매 횟수 정보
+message ProductBuyCountInfo
+{
+	string product_id		= 1;	// 상품 아이디
+	int32 cur_buy_count		= 2;	// 현재 구매 횟수
+}
+
+
+// 구매 결과 정보
+message BuyProductResultInfo
+{
+	enum eBuyRes
+	{
+		NONE                                = 0;    // NONE
+		BUY_SUCCESS                         = 1;    // 구매 성공 팝업을 띄우기 위함
+		PERIOD_PRODUCT_BUY_SUCCESS			= 2;	// 기간제 상품 구매 성공
+		LACK_OF_CURRENCY                    = 3;    // 재화 부족
+		EXPIRED_PRODUCT                     = 4;    // 상품 판매 종료
+		NOT_EXIST_PRODUCT                   = 5;    // 존재하지 않는 상품
+		NOT_EXIST_ITEMS                     = 6;    // 지급 가능 아이템들이 없음.
+		BUY_COUNT_ERROR                     = 7;    // 구매 갯수 에러. 구매갯수가 음수가 올 경우.
+		MAX_BUY_COUNT_OVER                  = 8;    // 최대 구매 가능 갯수 초과. 상품 별로 최대 구매 가능 갯수 존재.
+		OVERLAP_ITEM                        = 9;    // 중복 아이템으로 인한 구매 불가
+		EXPIRED_AUTHENTICATION              = 10;   // 본인 인증 만료
+		NOT_AUTHENTICATED_PUNISHMENT_USER   = 11;   // 처벌 유저인데 본인인증을 받지 않았다.
+		AUTHENTICATED_PUNISHMENT_USER       = 12;   // 처벌 유저인데 본인인증을 받았다.
+		BUY_ERROR                           = 99;   // 에러. 서버 자체적으로 로그 남기고 처리.
+	}
+	eBuyRes res = 1;    // 구매 결과
+	string data = 2;    // {"expire_time": 0}
+}
+
+// 클라이언트 개발자와 구매결과를 따로 관리하기로 협의
+message HSPDeliveryResultInfo
+{
+	enum ePurchaseCompleteRes
+	{
+		NONE                        = 0; // NONE
+		SUCCESS                     = 1; // 아이템 지급 성공
+		EXPIRED_PRODUCT             = 2; // 상품 판매 종료
+		NOT_EXIST_PRODUCT           = 3; // 존재하지 않는 상품
+		NOT_EXIST_ITEMS             = 4; // 지급 가능 아이템들이 없음.
+		MAX_BUY_COUNT_OVER          = 5; // 최대 구매 가능 갯수 초과. 상품 별로 최대 구매 가능 갯수 존재.
+		HSP_DELIVERY_NOT_FOUND      = 6; // HSP Delivery에서 상품 정보를 찾지 못했다.
+		HSP_DELIVERY_ERROR          = 7; // 에러. 서버 자체적으로 로그 남기고 처리.
+	}
+
+	ePurchaseCompleteRes res    = 1;
+}
+
+// 스페셜탭 노출 상품 정보
+message SpecialTabDisplayProductInfo
+{
+	bool isHiddenProduct	        = 1;	// 히든 상품 여부
+	ShopProductInfo product_info    = 2;	// 상품 정보
+}
+
+// 아이템 만료 정보
+message ItemExpireInfo
+{
+	int64 expire_time = 1;				// 만료 시간
+	ShopProductInfo product_info = 2;	// 상품 정보
+}
+
+// 메인팝업 정보
+message MainPopupInfo
+{
+	int32 main_popup_id = 1;	// 메인팝업 아이디
+	string button_text 	= 2;	// 버튼에 표시될 텍스트
+	string img_url 		= 3;	// url
+	int32 link_type 	= 4;	// 링크 타입
+	string link_value 	= 5;	// 링크 타입에 따른 값
+	bool today_check 	= 6;	// 오늘 하루 닫기 체크박스 등장/미등장
+	int32 exposure_type = 7;	// 노출 제어 타입
+	int32 priority 		= 8;	// 우선 순위
+	string title_text   = 9;	// 타이틀
+}
+
+// 가챠 상품 결제 정보
+message GachaProductPayInfo
+{
+	int32 count = 1;		// 가챠 횟수
+	int32 pay_type = 2;		// 결제 타입 ShopEnum.ePayType
+	int64 pay_price = 3;	// 가격
+	int64 again_price = 4;	// 할인 가격
+	int64 free_time = 5;	// 0이면 유료 뽑기 / 0초과 이면 무료뽑기 가능한 timestamp
+	bool isFree     = 6;    // 유/무료
+}
+
+// 가챠 상품 정보
+message GachaProductInfo
+{
+	string name = 1;		// 가챠 네임 "최대10억!"
+	int32 gacha_id = 2;		// 가챠 아이디
+
+	repeated GachaProductPayInfo pay_info = 3;	// 결제 정보
+}
+
+// 가챠 보상 정보
+message GachaRewardInfo
+{
+	int32 type = 1;			//	보상 타입	 ShopEnum.eRewardType
+	int64 value = 2;		//	보상 값
+	string grade = 3;		//	투전패 등급 "gacha_reward_grade_normal", "gacha_reward_grade_rare"
+}
+
+// 가챠 결과 정보
+message GachaResultInfo
+{
+	enum eRes
+	{
+		SUCCESS 							= 0;    // 성공만 연출후 가챠 완료
+		LACK_OF_CURRENCY 					= 1;    // 재화 부족
+		NOT_EXIST_PRODUCT 					= 2;    // 존재하지 않는 상품
+		EXPIRED_AUTHENTICATION              = 3;   	// 본인 인증 만료
+		NOT_AUTHENTICATED_PUNISHMENT_USER   = 4;   	// 처벌 유저인데 본인인증을 받지 않았다.
+		AUTHENTICATED_PUNISHMENT_USER       = 5;   	// 처벌 유저인데 본인인증을 받았다.
+		ERROR 								= 99;   // 에러
+	}
+
+	int32 res 				= 1;              		// 결과
+	string gacha_grade      = 2;  					// 투전통 등급   "gacha_grade_00", "gacha_grade_01", "gacha_grade_02"
+	string max_money_text   = 3;  					// 연출용 텍스트  "최대 1억쩐이 터집니다!"
+	UserInfo user_info      = 4;  					// 뽑기 결과에 따른 유저 재화 정보 변경
+	repeated GachaRewardInfo gacha_reward_info = 5; // 가챠 보상 정보
+}
+
+// 쿨타임 리워드 정보
+message CooltimeRewardInfo
+{
+	enum eRes {
+		SUCCESS 					= 0;	// 성공
+		NOT_RECHARGED_COOLTIME 		= 1; 	// 쿨타임 미충전
+		INITIALIZED_COOMTIME_REWARD = 2;	// 날짜가 변경되어 쿨타임 리워드가 초기화 됨
+		ERROR 						= 99;	// 에러
+	}
+
+	eRes res 			= 1;	// 결과
+	int64 reward_time 	= 2;	// 보상 수령 가능한 timestamp. -1 이면 금일 보상 완료
+	string reward_text 	= 3;	// 보상 텍스트
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+// using Room
+message JoinRoomResult
+{
+	enum eRetCode
+	{
+        RET_OK	         					= 0;    // 롬 조인 성공.
+        RET_FAIL               				= 1;    // 룸 조인 실패.
+        RET_INVALID_CHANNEL					= 2;    // 보유머니에 맞지 않는 채널.
+		RET_INVALID_CHANNEL_INFO			= 3;    // 잘못된 채널 정보.
+        RET_RESTRICTION_LAW					= 4;    // 손실 제한 규제 걸림 - val1: 제한 해제 시각, string: 제한 건 게임
+		RET_RESTRICTION_LAW_SYSTEM_ERROR	= 5;	// 시스템 오류로 인한 임시 손실 제한 규제
+		RET_CERTIFICATION_EXPIRE			= 6; 	// 본인 인증 만료.
+		RET_PUNISH_USER             		= 7;    // 처벌 사용자, 인증 완료
+		RET_PUNISH_USER_CERTIFICATION 		= 8;  	// 처벌 사용자 인증 필요
+    }
+
+	eRetCode	ret_code	= 1;	// 로그인 성공 여부.
+	int64		ret_val1	= 2;	// 추가 정보 값.
+	string		ret_string	= 3;	// 추가 정보 스트링.
+}
+
+message JoinRoomInfo	// 입장 원하는 룸 조건
+{
+	int64	seed_money 		= 1; 	// 시드머니
+    int32	base_card_count = 2; 	// 2장/3장
+}
+
+message RoomInfo	// 룸 정보
+{
+	eRoomState		room_state 				= 1;	// 룸 상태.
+	eRematchType	rematch_game			= 2;	// 재경기 타입.
+	int32			room_type 				= 3; 	// 방종류(일반:0,땡값+:1)
+	int32			base_card_count			= 4; 	// 2장/3장.
+	int64			seed_money 				= 5; 	// 시드머니
+	int32			channel_index			= 6;	// 채널 인덱스 (201, 202, ..., 301, 302, ...)
+	int32			betting_rule 			= 7;	// 베팅룰(일반,111,222,333,444)
+	int64			pot_money				= 8;	// 팟 머니.
+	int64			call_money				= 9;	// 콜 머니.
+	int32			boss_index 				= 10;	// 선 플레이어 인덱스.
+	int32			current_betting_index 	= 11;	// 현재 베팅 중인 플레이어의 인덱스.
+}
+
+message RoomPlayerInfo	// 룸 입장 플레이어 정보
+{
+	int32			seat_index          	= 1;	// 플레이어 Seat Index
+	string			user_id					= 2;	// 유저 아이디.
+	string			nickname            	= 3;	// 유저 닉네임.
+	int32			avatar_id				= 4;	// 아바타 아이디.
+	int32			level               	= 5; 	// 보유머니에 따른 등급.
+    int32   		match_count         	= 6;    // 현재 룸내에서 게임 플레이수.
+    int32 			win_count           	= 7; 	// 현재 룸내에서 승리수.
+    int32 			defeat_count        	= 8;	// 현재 룸내에서 패배수.
+	ePlayerType		player_type         	= 9;	// 플레이어 타입(NONE,PLAYER,WAITER,OBSERVER)
+	int64			game_money          	= 10;	// 플레이어 보유 머니.
+	bool			is_exit_reserve     	= 11;	// 나가기 예약.
+	int64			change_money        	= 12;	// 현재 룸내에서 현재 판에서 변화 머니(+/-)
+	int64			room_change_money   	= 13;	// 현재 룸내에서 누적된 변화 머니(+/-)
+	int32			betting_type 			= 14;	// 베팅 타입
+	repeated int32 	hand_cards   			= 15;   // 들고 있는 카드.
+	repeated int32 	hand_strengths   		= 16;   // 족보 정보.
+}
+
+message StartInfo
+{
+	int32			seat_index 	= 1;		// 플레이어 Seat Index
+	int64			game_money 	= 2;    	// 플레이어 보유 머니
+	ePlayerType		player_type	= 3;		// 플레이어 타입(NONE,PLAYER,WAITER,OBSERVER)
+}
+
+message SelectCardInfo
+{
+    int32	seat_index 	= 1;     	// 플레이어 Seat Index
+    int32   card_num 	= 2;		// 카드 OneNumber
+}
+
+message PairInfo    // 카드 2장 (섯다 족보)
+{
+	int32	card_0_onenumber 		= 1;       	// 첫번째 화투
+	int32	card_1_onenumber 		= 2;       	// 두번째 화투
+	int32	handStrength_code 		= 3;  		// 족보 enum 값.
+	bool	is_selectable 			= 4;        // 선택 가능여부
+}
+
+message GameEndPlayerInfo
+{
+	int32 		seat_index 			= 1; 		// 플레이어 인덱스
+	bool  		is_die 				= 2;		// Die했는지 여부
+	PairInfo 	pair_info 			= 3; 		// 선택한 카드 페어(족보) 정보
+	bool		is_rematch_player 	= 4; 		// 재경기 대상자 여부
+}
+
+message JoinRematchInfo
+{
+	int32 		seat_index 			= 1; 		// 플레이어 Seat Index
+	int64		additional_fee		= 2;		// 참가 추가금.
+	int64		call_money			= 3;		// 추가해야 할 미납 콜 금액.
+}
+
+message GameResultPlayerInfo	// 게임내에서 결과 오픈시 공유해야할 사용자 정보
+{
+	int32   seat_index 				= 1; 		// 플레이어 Seat Index
+	bool  	is_die 					= 2;		// Die했는지 여부
+	int32	handStrength_code 		= 3;		// 족보 enum 값.
+	int64 	result_money 			= 4; 		// 최종 게임 머니
+	int64 	stake_money 			= 5; 		// 이번 판 내가 베팅 한 금액.
+	int64 	change_money 			= 6; 		// 현재 룸내에서 현재 판에서 변화 머니(+/-)
+	int64 	ddang_money 			= 7; 		// 현재 룸내에서 현재 판에서 땡값(패자는 -, 승자는 +)
+	int64 	room_change_money 		= 8;		// 현재 룸내에서 누적된 변화 머니(+/-)
+	int32 	win_count 				= 9; 		// 현재 룸내에서 승리수
+	int32 	defeat_count 			= 10; 		// 현재 룸내에서 패배수
+	int64 	commission 				= 11;		// 수수료
+	int32	dealer_item_id			= 12;		// 소유하고 있는 딜러 아이템 아이디.
+}
+
+message FreeChargeInfo
+{
+	int32	total_count		= 1;		// 일일 총 무료 충전 가능 횟수.
+	int32	remain_count	= 2;		// 당일 무료 충전 남은 횟수.
+	int64	charge_money	= 3;		// 이번 충전시 충전된 금액 (모두 소진된 상태일 경우 0으로 세팅).
+}
+
+// 런칭 이벤트 보상 정보
+message DdangMoneyEventRewardInfo
+{
+	int32 phase = 1;			    // 단계
+	int64 ddang_money = 2;    		// 단계별 땡값
+	int32 reward_type = 3; 			// 보상 타입
+	int64 reward_quantity 	= 4;    // 보상 수량
+	string reward_text = 5;			// 보상 텍스트
+	bool is_complete = 6;			// 완료 여부
+}
