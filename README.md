@@ -27,7 +27,8 @@
 ---
 
 ## 🎬 Introduction Video Clip 
-[![Introduction](https://img.youtube.com/vi/BdeHqIiMmzs/0.jpg)](https://www.youtube.com/watch?v=BdeHqIiMmzs)
+[![Introduction](eat/document/img/video_clip.png)](https://www.youtube.com/watch?v=BdeHqIiMmzs)
+[YouTube Link](https://www.youtube.com/watch?v=BdeHqIiMmzs)
 
 ## 🎨 Features
 
