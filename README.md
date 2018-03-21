@@ -37,6 +37,7 @@
 ### 📖 Scenario using Json
 **(Json based scenario testing tool(which can have test for functional and non-functional))**
 - Transfer/Receiving packets are defined with **Json format**
+- The defined Json will encoded to Binary packet, and received binary packet will decoded to Json as well.
 - It provides <u>easy to understand and define</u> Test Case.
 - Internally,it uses java reflection, so **developer doesn’t need consider testing implementation**, just define **Test Scenario**.
 
