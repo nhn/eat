@@ -1,6 +1,8 @@
 # EAT(End-point Autonomous Testing Tool)
 
 
+[![GitHub release](https://img.shields.io/github/release/nhnent/eat.svg)](https://github.com/nhnent/eat/releases/latest) [![GitHub license](https://img.shields.io/github/license/nhnent/eat.svg)](https://github.com/nhnent/eat/blob/master/LICENSE) [![PRs welcome](https://img.shields.io/badge/PRs-welcome-ff69b4.svg)](https://github.com/nhnent/eat/pulls) [![code with hearth by NHN Entertainment](https://img.shields.io/badge/%3C%2F%3E%20with%20%E2%99%A5%20by-NHN%20Entertainment-ff1414.svg)](https://github.com/nhnent)
+
 
 ## 🚩 Table of Contents
 
