@@ -213,33 +213,31 @@ public class ScenarioLoader {
                 // header == SLEEP 500
                 // jsonBody == ""
 
-                if(syllable.contains("{"))
-                {
-                    int headerEndIndex = syllable.indexOf('{');
+                try {
+                    if (syllable.contains("{")) {
+                        int headerEndIndex = syllable.indexOf('{');
 
-                    header = syllable.substring(0, headerEndIndex);
-                    jsonBody = syllable.substring(headerEndIndex);
-                }
-                else
-                {
-                    header = syllable;
-                    jsonBody = EmptyString;
-                }
+                        header = syllable.substring(0, headerEndIndex);
+                        jsonBody = syllable.substring(headerEndIndex);
+                    } else {
+                        header = syllable;
+                        jsonBody = EmptyString;
+                    }
 
-                // If the syllable starts with "include", recursive the loadScenario function.
-                if(header.startsWith(IncludeDelimiter))
-                {
-                    String scenarioPath = Config.obj().getScenario().getScenarioPath();
-                    String includeFileName = scenarioPath + "/" + header.replace(" ", "")
-                            .replace(IncludeDelimiter + "=", "");
-                    listScenarioUnit.addAll(loadScenario(includeFileName, userId));
-                }
-                else
-                {
-                    // Create a ScenarioUnit by passing ScenarioUnit parser.
-                    scenarioUnit = scenarioUnitParser.parse(header, jsonBody);
+                    // If the syllable starts with "include", recursive the loadScenario function.
+                    if (header.startsWith(IncludeDelimiter)) {
+                        String scenarioPath = Config.obj().getScenario().getScenarioPath();
+                        String includeFileName = scenarioPath + "/" + header.replace(" ", "")
+                                .replace(IncludeDelimiter + "=", "");
+                        listScenarioUnit.addAll(loadScenario(includeFileName, userId));
+                    } else {
+                        // Create a ScenarioUnit by passing ScenarioUnit parser.
+                        scenarioUnit = scenarioUnitParser.parse(header, jsonBody);
 
-                    listScenarioUnit.add(scenarioUnit);
+                        listScenarioUnit.add(scenarioUnit);
+                    }
+                } catch (Exception e) {
+                    logger.error("Failed to load scenario : \n{}", syllable);
                 }
             }
 
