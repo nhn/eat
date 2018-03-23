@@ -15,7 +15,6 @@
 - [License](#-license)
 
 
-
 ------
 
 ## 🌏 System Requirements
@@ -33,9 +32,17 @@
 ## 🎨 Features
 
 ### 📖 Scenario using Json
-**(Json based scenario testing tool(which can have test for functional and non-functional))**
+
+
+
+![example of scenario](eat/document/img/processing.png)
+
+
+
+**Json based scenario testing tool(which can have test for functional and non-functional)**
+
 - Transfer/Receiving packets are defined with **Json format**
-- It provides <u>easy to understand and define</u> Test Case.
+- It provides **easy to understand and define** Test Case.
 - Internally,it uses java reflection, so **developer doesn’t need consider testing implementation**, just define **Test Scenario**.
 
 ![example of scenario](eat/document/img/scenario_example1.JPG)
@@ -97,7 +104,6 @@ The test report will displayed with the following features
 ### Expand to Load Testing.
 
 - Based on scenario, it can support **load testing**.(ex,Peak test, Stress test and so on)
-
 
 
 ------
