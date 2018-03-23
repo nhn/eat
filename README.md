@@ -45,7 +45,7 @@
 
 - Transfer/Receiving packets are defined with **Json format**
 - The defined Json will encoded to Binary packet, and received binary packet will decoded to Json as well.
-- It provides <u>easy to understand and define</u> Test Case.
+- It provides **easy to understand and define** Test Case.
 - Internally,it uses java reflection, so **developer doesn’t need consider testing implementation**, just define **Test Scenario**.
 
 ![example of scenario](eat/document/img/scenario_example1.JPG)
