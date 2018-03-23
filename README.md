@@ -1,6 +1,8 @@
 # EAT(End-point Autonomous Testing Tool)
 
 
+[![GitHub release](https://img.shields.io/github/release/nhnent/eat.svg)](https://github.com/nhnent/eat/releases/latest) [![GitHub license](https://img.shields.io/github/license/nhnent/eat.svg)](https://github.com/nhnent/eat/blob/master/LICENSE) [![PRs welcome](https://img.shields.io/badge/PRs-welcome-ff69b4.svg)](https://github.com/nhnent/eat/pulls) [![code with hearth by NHN Entertainment](https://img.shields.io/badge/%3C%2F%3E%20with%20%E2%99%A5%20by-NHN%20Entertainment-ff1414.svg)](https://github.com/nhnent)
+
 
 ## 🚩 Table of Contents
 
@@ -42,7 +44,8 @@
 **Json based scenario testing tool(which can have test for functional and non-functional)**
 
 - Transfer/Receiving packets are defined with **Json format**
-- It provides **easy to understand and define** Test Case.
+- The defined Json will encoded to Binary packet, and received binary packet will decoded to Json as well.
+- It provides <u>easy to understand and define</u> Test Case.
 - Internally,it uses java reflection, so **developer doesn’t need consider testing implementation**, just define **Test Scenario**.
 
 ![example of scenario](eat/document/img/scenario_example1.JPG)
