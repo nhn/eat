@@ -45,8 +45,8 @@
 
 ### 👫 For Who?
 EAT can be used for the following developer who want have regression/load test
-- Developer for Game Server
-- Developer for General Server(which communicate with binary packet)
+- Developer who need Game Server Test
+- Developer who need General Server(which communicate with binary packet) Test
 
 ### 📃 Report Test Result
 
