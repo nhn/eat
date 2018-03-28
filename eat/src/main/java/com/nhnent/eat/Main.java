@@ -94,7 +94,7 @@ public final class Main {
             manager.spawn();
             manager.join();
         } catch (Exception e) {
-            logger.error("Exception is raised", ExceptionUtils.getStackTrace(e));
+            logger.error("Exception is raised {}", ExceptionUtils.getStackTrace(e));
         }
     }
 
