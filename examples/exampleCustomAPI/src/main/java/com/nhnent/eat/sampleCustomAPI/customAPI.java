@@ -26,7 +26,11 @@ public class customAPI extends BaseCustomAPI {
             runtimeVar.put(scenario.returnVariableName, userNickname);
         }
 
-        return Boolean.TRUE;
+        if(scenario.extraFunctionName.equals("illegalCustomApi")) {
+            return Boolean.FALSE;
+        }
+
+        return Boolean.FALSE;
     }
 
 
