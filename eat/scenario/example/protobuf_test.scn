@@ -19,9 +19,9 @@
     "resultType":"SUCCESS"
 }
 
-#include=example/protobuf_test2.scn
+#include=example/protobuf_test_include.scn
 
-#BEGIN_LOOP 10
+#BEGIN_LOOP 3
 
     #Request:[TUTORIAL]Basic.RequestGameDecision
     {
@@ -35,3 +35,7 @@
     #SLEEP 300
 
 #END_LOOP
+
+
+#include=example/protobuf_test_customApi_loop.scn
+

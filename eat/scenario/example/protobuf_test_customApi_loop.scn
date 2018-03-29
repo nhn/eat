@@ -1,0 +1,24 @@
+
+
+#BEGIN_LOOP 2
+
+    #PRINT LOOP_LEVEL1_BEGIN
+
+    #BEGIN_LOOP 3
+
+        #PRINT LOOP_LEVEL2_BEGIN
+
+        -- The following `illegalCustomApi()` will return FAIL(which means stop scenario)
+        -- So `RequestGameDecision` will not transfer to Server
+        -- 2nd Loop will skipped, scenario step will move to 1st loop
+        #FUNCTION illegalCustomApi()
+
+        #PRINT LOOP_LEVEL2_WILL_NOT_CALLED
+
+        #PRINT LOOP_LEVEL2_END
+
+    #END_LOOP
+
+    #PRINT LOOP_LEVEL1_END
+
+#END_LOOP

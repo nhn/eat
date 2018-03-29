@@ -169,27 +169,27 @@ public class ScenarioExecutor {
                 if (scenario.type.equals(ScenarioUnitType.ExtraFunctionCall)) {
                     if(ApiLoader.obj().executeExtraFunction(result, userId, scenario).equals(Boolean.FALSE)) {
                         //If status is in Loop, exit from current Loop
-                        int currentLoopCount = loopCountList.get(loopDepth) - 1;
-                        logger.warn("Stopped by API, currentLoopCount:{}, loopDepth:{}", currentLoopCount, loopDepth);
-                        if (currentLoopCount >= 1) {
+                        if(loopDepth >= 0) {
+                            int currentLoopCount = loopCountList.get(loopDepth) - 1;
+                            logger.warn("Stopped by API, currentLoopCount:{}, loopDepth:{}", currentLoopCount, loopDepth);
+                            if (currentLoopCount >= 0) {
 
-                            int tmpScenarioIdx = scenarioIdx + 1;
-                            while (true) {
-                                ScenarioUnit tmpScenario = listScenario.get(tmpScenarioIdx);
-                                if (tmpScenario.loopType == LoopType.LoopEnd &&
-                                        tmpScenario.loopDepth == loopDepth) {
-                                    scenarioIdx = tmpScenarioIdx - 1;
-                                    break;
+                                int tmpScenarioIdx = scenarioIdx + 1;
+                                while (true) {
+                                    ScenarioUnit tmpScenario = listScenario.get(tmpScenarioIdx);
+                                    if (tmpScenario.loopType == LoopType.LoopEnd &&
+                                            tmpScenario.loopDepth == loopDepth) {
+                                        scenarioIdx = tmpScenarioIdx - 1;
+                                        break;
+                                    }
+                                    tmpScenarioIdx++;
                                 }
-                                tmpScenarioIdx++;
                             }
-                        }
-                        if(loopDepth > 0) {
-                            loopCountList.remove(loopDepth);
-                            loopDepth--;
-                            logger.warn("End Loop by API(in-Loop level)");
-                        } else {
-                            logger.warn("End Loop by API(Top level)");
+                            if (loopDepth > 0) {
+                                logger.warn("End Loop by API(In-Loop level)");
+                            } else {
+                                logger.warn("End Loop by API(Top level)");
+                            }
                         }
                     }
                     continue;
