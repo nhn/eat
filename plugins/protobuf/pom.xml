@@ -11,14 +11,6 @@
     <!--Endpoint Automatic Tester-->
     <name>Plugins(protobuf)</name>
 
-    <repositories>
-        <repository>
-            <id>releases</id>
-            <name>Nhnent Maven Release Repository</name>
-            <url>http://nexus.nhnent.com/content/repositories/releases/</url>
-        </repository>
-    </repositories>
-
     <dependencies>
         <!-- EAT -->
         <dependency>

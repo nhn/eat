@@ -77,7 +77,7 @@
   },
   "customScenarioAPI": {
     "use": true,
-    "jarFile": "/home/jskim/work/eat/eat/eat/extraLibrary/sampleCustomAPI-1.0.jar",
+    "jarFile": "/home/jskim/work/eat/eat/eat/extraLibrary/exampleCustomAPI-1.0.jar",
     "apiClassName": "com.nhnent.eat.sampleCustomAPI.customAPI"
   },
   "scenario": {
