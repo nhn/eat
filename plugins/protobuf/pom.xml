@@ -16,7 +16,7 @@
         <dependency>
             <groupId>com.nhnent.eat</groupId>
             <artifactId>eat</artifactId>
-            <version>0.1.2</version>
+            <version>0.1.3</version>
         </dependency>
 
     </dependencies>
