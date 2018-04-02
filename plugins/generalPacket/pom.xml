@@ -53,7 +53,11 @@
                 <configuration>
                     <outputDirectory>../../eat/extraLibrary/</outputDirectory>
                     <appendAssemblyId>false</appendAssemblyId>
-                    <descriptorRefs>jar-with-dependencies</descriptorRefs>
+                    <descriptorRefs>
+                        <descriptorRef>
+                            jar-with-dependencies
+                        </descriptorRef>
+                    </descriptorRefs>
                 </configuration>
                 <executions>
                     <execution>
