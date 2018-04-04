@@ -30,7 +30,7 @@ public class customAPI extends BaseCustomAPI {
             return Boolean.FALSE;
         }
 
-        return Boolean.FALSE;
+        return Boolean.TRUE;
     }
 
 
