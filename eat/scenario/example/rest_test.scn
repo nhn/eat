@@ -1,0 +1,18 @@
+
+-- REST.
+
+#BEGIN_LOOP 5
+    #RestRequest
+    {
+        "Method": "GET",
+        "Url": "https://xkcd.com/info.0.json"
+    }
+
+    #RestResponse
+    {
+
+    }
+
+    #SLEEP 1000
+
+#END_LOOP

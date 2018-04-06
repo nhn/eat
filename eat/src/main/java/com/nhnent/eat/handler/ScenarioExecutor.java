@@ -118,6 +118,7 @@ public class ScenarioExecutor {
                     logger.debug("Set Card Deck is transmitted\n.{}", scenario.json);
                     continue;
                 }
+
                 // TODO: JMX call Old version.. have to delete
                 if (scenario.type.equals(ScenarioUnitType.SetQaCommand)) {
                     JMXClient.obj().setQaCommand(scenario.json);
@@ -127,7 +128,6 @@ public class ScenarioExecutor {
                     logger.debug("Set QA Command is transmitted\n.{}", scenario.json);
                     continue;
                 }
-
 
                 if (scenario.loopType == LoopType.LoopStart) {
                     if (scenario.loopDepth != loopDepth) {
@@ -162,19 +162,20 @@ public class ScenarioExecutor {
                     Strand.sleep(scenario.sleepPeriod);
                     continue;
                 }
-                if(scenario.type.equals(ScenarioUnitType.Print)) {
+                if (scenario.type.equals(ScenarioUnitType.Print)) {
                     logger.info("[PRINT] {}", scenario.reservedField);
                     continue;
                 }
                 if (scenario.type.equals(ScenarioUnitType.ExtraFunctionCall)) {
-                    if(ApiLoader.obj().executeExtraFunction(result, userId, scenario).equals(Boolean.FALSE)) {
+                    if (ApiLoader.obj().executeExtraFunction(result, userId, scenario).equals(Boolean.FALSE)) {
                         //If status is in Loop, exit from current Loop
-                        if(loopDepth >= 0) {
+                        if (loopDepth >= 0) {
                             int currentLoopCount = loopCountList.get(loopDepth) - 1;
                             logger.warn("Stopped by API, currentLoopCount:{}, loopDepth:{}", currentLoopCount, loopDepth);
                             if (currentLoopCount >= 0) {
 
                                 int tmpScenarioIdx = scenarioIdx + 1;
+
                                 while (true) {
                                     ScenarioUnit tmpScenario = listScenario.get(tmpScenarioIdx);
                                     if (tmpScenario.loopType == LoopType.LoopEnd &&
@@ -203,12 +204,11 @@ public class ScenarioExecutor {
                 }
 
 
-                for(IBaseCommunication communication : listCommunication)
-                {
-                    if(communication.isRegisteredScenarioType(scenario.type))   // Is it REST or Netty or JMX... ?
-                    {
-                        switch (scenario.communicationMethod)                   // Is it Request or Response ?
-                        {
+                for (IBaseCommunication communication : listCommunication) {
+                    if (communication.isRegisteredScenarioType(scenario.type)) {  // Is it REST or Netty or JMX... ?
+
+                        switch (scenario.communicationMethod) {                  // Is it Request or Response ?
+
                             case CommunicationMethod.Request:
                                 requestTime = Instant.now();
 
@@ -219,13 +219,11 @@ public class ScenarioExecutor {
 
                                 Boolean isSucceed = communication.compareWithRealResponse(scenario);
 
-                                if(isSucceed)
-                                {
+                                if (isSucceed) {
                                     responseTime = Instant.now();
                                     result.listResponseTime.add(Duration.between(requestTime, responseTime));
                                     succeedCount++;
-                                }
-                                else
+                                } else
                                     failureCount++;
                                 break;
 
@@ -234,7 +232,6 @@ public class ScenarioExecutor {
                                 break;
                         }
                     }
-
                 }
 
 

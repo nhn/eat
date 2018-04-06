@@ -7,6 +7,7 @@ import com.nhnent.eat.entity.ScenarioUnit;
 import com.nhnent.eat.entity.ScenarioUnitType;
 import com.nhnent.eat.handler.ComparePacket;
 import javafx.util.Pair;
+import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -49,19 +50,25 @@ public class RestCommunication implements IBaseCommunication {
         if (restResponseStack.isEmpty()) return Boolean.FALSE;
 
         String realResultJson = restResponseStack.pop();
+        Boolean isSucceed = Boolean.FALSE;
+        try {
+            isSucceed = ComparePacket.ComparePacket(scenarioUnit.json, realResultJson);
 
-        Boolean isSucceed = ComparePacket.ComparePacket(scenarioUnit.json, realResultJson);
+            if (Config.obj().getDisplay().isDisplayUnitTestResult()) {
+                logger.info("<-------Matching result(" + "RESTful Response" + ")------->");
 
-        if (Config.obj().getDisplay().isDisplayUnitTestResult()) {
-            logger.info("<-------Matching result(" + "RESTful Response" + ")------->");
-
-            if (isSucceed) {
-                logger.info("<-------Result : Succeed!");
-            } else {
-                logger.error("<-------Result : Failure!");
+                if (isSucceed) {
+                    logger.info("<-------Result : Succeed!");
+                } else {
+                    logger.error("<-------Result : Failure!");
+                }
+                logger.info("<-------expected:\n" + scenarioUnit.json);
+                logger.info("<-------real:\n" + realResultJson);
             }
-            logger.info("<-------expected:\n" + scenarioUnit.json);
-            logger.info("<-------real:\n" + realResultJson);
+        } catch (Exception e) {
+            logger.error("Failed to compare response: {}\n {}",
+                    ExceptionUtils.getStackTrace(e),
+                    realResultJson);
         }
 
         return isSucceed;
