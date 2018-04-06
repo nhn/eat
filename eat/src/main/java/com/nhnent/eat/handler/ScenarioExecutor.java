@@ -221,11 +221,8 @@ public class ScenarioExecutor {
 
                                 if(isSucceed)
                                 {
-                                    if(scenario.type.equals(ScenarioUnitType.Response))
-                                    {
-                                        responseTime = Instant.now();
-                                        result.listResponseTime.add(Duration.between(requestTime, responseTime));
-                                    }
+                                    responseTime = Instant.now();
+                                    result.listResponseTime.add(Duration.between(requestTime, responseTime));
                                     succeedCount++;
                                 }
                                 else
