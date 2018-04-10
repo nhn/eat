@@ -3,10 +3,9 @@ package com.nhnent.eat.plugin.generalPacket;
 import com.google.gson.Gson;
 import com.nhnent.eat.common.PacketClassPool;
 import com.nhnent.eat.entity.GeneratedPacketJson;
+import com.nhnent.eat.entity.ScenarioUnit;
 import com.nhnent.eat.packets.IStreamPacket;
 import com.nhnent.generalPacket.packets.MessageEnvelop;
-import io.netty.buffer.ByteBuf;
-import io.netty.buffer.Unpooled;
 import javafx.util.Pair;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.slf4j.Logger;
@@ -16,6 +15,7 @@ import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.util.Queue;
 
+import static com.nhnent.eat.common.CommonDefine.*;
 import static com.nhnent.eat.handler.PacketJsonHandler.removeRedundant;
 import static com.nhnent.eat.plugin.generalPacket.CommonUtil.deserialize;
 import static com.nhnent.eat.plugin.generalPacket.CommonUtil.serialize;
@@ -38,6 +38,37 @@ public class GeneralPacket implements IStreamPacket {
     @Override
     public void initSingletonInstance() {
 
+    }
+
+
+    @Override
+    public ScenarioUnit decodeScenarioHeader(String packetHeader, ScenarioUnit scenarioUnit) {
+
+        final int indexOfPckName = 1;
+        final int indexOfPckSubID = 2;
+        final int lengthOfContainPckName = 2;
+        final int lengthOfContainPckSubID = 3;
+
+        String pckType;
+        String pckName = EmptyString;
+        String subId = EmptyString;
+
+        String[] scenarioDefine = packetHeader.split(PckNameDelimiter);
+        pckType = scenarioDefine[0].replace(PckDefDelimiter, EmptyString);
+
+        if (scenarioDefine.length >= lengthOfContainPckName) {
+            pckName = scenarioDefine[indexOfPckName];
+        }
+        if (scenarioDefine.length == lengthOfContainPckSubID) {
+            subId = scenarioDefine[indexOfPckSubID];
+        }
+
+        scenarioUnit.packageName = pckName.split("]")[0].replace("[", "");
+        scenarioUnit.name = pckName.split("]")[1];
+        scenarioUnit.subId = subId;
+        scenarioUnit.type = pckType;
+
+        return scenarioUnit;
     }
 
     // Json 형태로 decode
@@ -81,9 +112,18 @@ public class GeneralPacket implements IStreamPacket {
     }
 
     @Override
-    public byte[] jsonToPacket(String packetType, String packageName, String packetName, String jsonContents) {
+    public byte[] jsonToPacket(ScenarioUnit scenarioUnit) {
 
         gson = new Gson();
+
+        String packageName = scenarioUnit.packageName;
+        String packetName;
+        if (scenarioUnit.name.contains(".")) {
+            packetName = scenarioUnit.name.split("\\.")[1];
+        } else {
+            packetName = scenarioUnit.name;
+        }
+        String jsonContents = scenarioUnit.json;
 
         // Find the class.
         Class targetClass =

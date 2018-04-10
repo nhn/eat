@@ -5,6 +5,7 @@ import com.google.protobuf.InvalidProtocolBufferException;
 import com.google.protobuf.Message;
 import com.nhnent.eat.common.PacketClassPool;
 import com.nhnent.eat.entity.GeneratedPacketJson;
+import com.nhnent.eat.entity.ScenarioUnit;
 import com.nhnent.eat.packets.IStreamPacket;
 import com.nhnent.eat.plugin.protobuf.config.ProtobufConfig;
 import io.netty.buffer.ByteBuf;
@@ -19,6 +20,7 @@ import org.slf4j.LoggerFactory;
 import java.util.Arrays;
 import java.util.Queue;
 
+import static com.nhnent.eat.common.CommonDefine.*;
 import static com.nhnent.eat.handler.PacketJsonHandler.removeRedundant;
 import static com.nhnent.eat.plugin.protobuf.ProtobufUtil.messageToJson;
 
@@ -34,6 +36,50 @@ public class ProtoBufPacket implements IStreamPacket {
     @Override
     public void initSingletonInstance() {
         GenerateJAR.getInstance().initialize();
+    }
+
+    @Override
+    public ScenarioUnit decodeScenarioHeader(String packetHeader, ScenarioUnit scenarioUnit) {
+
+        final int indexOfPckName = 1;
+        final int indexOfPckSubID = 2;
+        final int indexOfPckServiceID = 3;
+
+        //ex) #Response:[TUTORIAL]Basic.ResponseStartGame
+        final int lengthOfContainPckName = 2;
+
+        //ex) #Response:[TUTORIAL]Basic.ResponseStartGame:[subID]
+
+        final int lengthOfContainPckSubID = 3;
+
+        //ex) #Response:[TUTORIAL]Basic.ResponseStartGame:[subID]:[svcID]
+        final int lengthOfContainPckServiceID = 4;
+
+        String pckType;
+        String pckName = EmptyString;
+        String subId = EmptyString;
+        String serviceId = EmptyString;
+
+        String[] scenarioDefine = packetHeader.split(PckNameDelimiter);
+        pckType = scenarioDefine[0].replace(PckDefDelimiter, EmptyString);
+
+        if (scenarioDefine.length >= lengthOfContainPckName) {
+            pckName = scenarioDefine[indexOfPckName];
+        }
+        if (scenarioDefine.length == lengthOfContainPckSubID) {
+            subId = scenarioDefine[indexOfPckSubID];
+        }
+        if (scenarioDefine.length == lengthOfContainPckServiceID) {
+            serviceId = scenarioDefine[indexOfPckServiceID];
+        }
+
+        scenarioUnit.packageName = pckName.split("]")[0].replace("[", "");
+        scenarioUnit.name = pckName.split("]")[1];
+        scenarioUnit.subId = subId;
+        scenarioUnit.type = pckType;
+        scenarioUnit.dest = serviceId;
+
+        return scenarioUnit;
     }
 
     @Override
@@ -68,18 +114,32 @@ public class ProtoBufPacket implements IStreamPacket {
     }
 
     @Override
-    public byte[] jsonToPacket(String packetType, String packageName,
-                               String packetName, String jsonContents) {
+    public byte[] jsonToPacket(ScenarioUnit scenarioUnit) {
+
         byte[] packet = null;
         Message.Builder msg;
         DynamicMessage message;
         String serviceID;
 
         try {
+            String packageName = scenarioUnit.packageName;
+            String packetName;
+            if (scenarioUnit.name.contains(".")) {
+                packetName = scenarioUnit.name.split("\\.")[1];
+            } else {
+                packetName = scenarioUnit.name;
+            }
+            String packetType = scenarioUnit.type;
+            String jsonContents = scenarioUnit.json;
+
             msg = ProtobufDescPool.obj().JsonToMessage(packageName + "." + packetName, jsonContents);
 
             message = (DynamicMessage) msg.build();
-            serviceID = ProtobufConfig.obj().getProtobuf().getServiceId();
+            if(scenarioUnit.dest != EmptyString) {
+                serviceID = scenarioUnit.dest;
+            } else {
+                serviceID = ProtobufConfig.obj().getProtobuf().getServiceId();
+            }
             packet = Packet.generateTransferPacket(serviceID, packetType, "", message);
         } catch (Exception e) {
             logger.error(ExceptionUtils.getStackTrace(e));
