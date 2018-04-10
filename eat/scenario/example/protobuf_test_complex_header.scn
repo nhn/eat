@@ -1,0 +1,22 @@
+
+--DECLARE common value
+@@CMM_VAR@@ password = pwd123
+
+#Request:[TUTORIAL]Basic.RequestLogin:subID:ServiceID
+{
+    "user_id" : "test123",
+    "password" : "@@password"
+}
+
+#FUNCTION @@UserNickname=getUserNickname()
+
+#Request:[TUTORIAL]Basic.RequestStartGame:subID:ServiceID
+{
+}
+
+#Response:[TUTORIAL]Basic.ResponseStartGame
+{
+    "resultType":"SUCCESS"
+}
+
+

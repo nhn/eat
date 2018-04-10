@@ -75,14 +75,7 @@ public class NettyCommunication implements IBaseCommunication {
         try {
             byte[] packet;
 
-            if (scenarioUnit.name.contains(".")) {
-                packet = StreamPacket.obj().jsonToPacket(userId, scenarioUnit.type,
-                        scenarioUnit.packageName, scenarioUnit.name.split("\\.")[1], scenarioUnit.json);
-            } else {
-                packet = StreamPacket.obj().jsonToPacket(userId, scenarioUnit.type,
-                        scenarioUnit.packageName, scenarioUnit.name, scenarioUnit.json);
-            }
-
+            packet = StreamPacket.obj().jsonToPacket(userId, scenarioUnit);
 
             if (!nettyClient.getConnected()) nettyClient.startUp(actorIndex);
 

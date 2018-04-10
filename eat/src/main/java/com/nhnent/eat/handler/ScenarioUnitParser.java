@@ -8,6 +8,7 @@ import com.nhnent.eat.entity.CommunicationMethod;
 import com.nhnent.eat.entity.LoopType;
 import com.nhnent.eat.entity.ScenarioUnit;
 import com.nhnent.eat.entity.ScenarioUnitType;
+import com.nhnent.eat.packets.StreamPacket;
 
 import java.util.Arrays;
 import java.util.LinkedList;
@@ -24,23 +25,17 @@ public class ScenarioUnitParser {
 
     private int loopDepth = 0;
 
-    public ScenarioUnit parse(String packetHeader, String json)
-    {
+    public ScenarioUnit parse(String packetHeader, String json) {
 
         ScenarioUnit newScenarioUnit = new ScenarioUnit();
 
         String pckJson = json;
 
-        if(packetHeader.startsWith(RequestRESTString))
-        {
+        if (packetHeader.startsWith(RequestRESTString)) {
             newScenarioUnit.type = ScenarioUnitType.RequestREST;
-        }
-        else if(packetHeader.startsWith(ResponseRESTString))
-        {
+        } else if (packetHeader.startsWith(ResponseRESTString)) {
             newScenarioUnit.type = ScenarioUnitType.ResponseREST;
-        }
-        else if(packetHeader.startsWith(RequestJMXString))
-        {
+        } else if (packetHeader.startsWith(RequestJMXString)) {
             String[] scenarioDefine;
 
             scenarioDefine = packetHeader.split(PckNameDelimiter);
@@ -50,91 +45,60 @@ public class ScenarioUnitParser {
             newScenarioUnit.name = mBeanName;
             newScenarioUnit.dest = functionName;
             newScenarioUnit.type = ScenarioUnitType.SetJMXQaCommand;
-        }
-        else if(packetHeader.startsWith(BeginQaCommandDelimiter))
-        {
+
+        } else if (packetHeader.startsWith(BeginQaCommandDelimiter)) {
             newScenarioUnit.type = ScenarioUnitType.SetQaCommand;
-        }
-        else if(packetHeader.startsWith(ResponseJMXString))
-        {
+        } else if (packetHeader.startsWith(ResponseJMXString)) {
             newScenarioUnit.type = ScenarioUnitType.GetJMXQaCommand;
-        }
-        else if(packetHeader.startsWith(BeginSetCardDeckDelimiter))
-        {
+        } else if (packetHeader.startsWith(BeginSetCardDeckDelimiter)) {
             newScenarioUnit.type = ScenarioUnitType.SetCardDeck;
-        }
-        else if(packetHeader.startsWith(LoopStartDelimiter))
-        {
+        } else if (packetHeader.startsWith(LoopStartDelimiter)) {
             int loopCount = Integer.parseInt(packetHeader.replace(LoopStartDelimiter, EmptyString).trim());
 
             newScenarioUnit.loopType = LoopType.LoopStart;
             newScenarioUnit.loopCount = loopCount;
             newScenarioUnit.loopDepth = loopDepth;
             loopDepth++;
-        }
-        else if(packetHeader.startsWith(LoopEndDelimiter))
-        {
+
+        } else if (packetHeader.startsWith(LoopEndDelimiter)) {
             loopDepth--;
 
             newScenarioUnit.loopType = LoopType.LoopEnd;
             newScenarioUnit.loopDepth = loopDepth;
-        }
-        else if(packetHeader.startsWith(SleepDelimiter))
-        {
+
+        } else if (packetHeader.startsWith(SleepDelimiter)) {
             int sleepPeriod = Integer.parseInt(packetHeader.replace(SleepDelimiter, EmptyString).trim());
 
             newScenarioUnit.type = ScenarioUnitType.Sleep;
             newScenarioUnit.sleepPeriod = sleepPeriod;
-        }
-        else if(packetHeader.startsWith(PrintDelimiter))
-        {
+
+        } else if (packetHeader.startsWith(PrintDelimiter)) {
             String printString = packetHeader.replace(PrintDelimiter, EmptyString).trim();
 
             newScenarioUnit.type = ScenarioUnitType.Print;
             newScenarioUnit.reservedField = printString;
-        }
-        else if(packetHeader.startsWith(ExtraFunction))
-        {
+
+        } else if (packetHeader.startsWith(ExtraFunction)) {
             newScenarioUnit.type = ScenarioUnitType.ExtraFunctionCall;
             extractExtraFunctionElement(packetHeader, newScenarioUnit);
-        }
-        else if(packetHeader.startsWith(DisconnectionDelimiter))
-        {
+
+        } else if (packetHeader.startsWith(DisconnectionDelimiter)) {
             newScenarioUnit.type = ScenarioUnitType.Disconnect;
-        }
-        else if(packetHeader.startsWith(ConnectionDelimiter))
-        {
+
+        } else if (packetHeader.startsWith(ConnectionDelimiter)) {
             newScenarioUnit.type = ScenarioUnitType.Connect;
-        }
-        else
-        {
-            final int indexOfPckName = 1;
-            final int indexOfPckSubID = 2;
-            final int lengthOfContainPckName = 2;
-            final int lengthOfContainPckSubID = 3;
+
+        } else {
 
             String pckType;
-            String pckName = EmptyString;
-            String subId = EmptyString;
 
-            String[] scenarioDefine = packetHeader.split(PckNameDelimiter);
-            pckType = scenarioDefine[0].replace(PckDefDelimiter, EmptyString);
+            newScenarioUnit = StreamPacket.obj().decodeScenarioHeader(packetHeader, newScenarioUnit);
 
-            if(pckType.equals("END"))
-            {
+            pckType = newScenarioUnit.type;
+
+            if (pckType.equals("END")) {
                 return null;
             }
-
-            if (scenarioDefine.length >= lengthOfContainPckName) {
-                pckName = scenarioDefine[indexOfPckName];
-            }
-            if (scenarioDefine.length == lengthOfContainPckSubID) {
-                subId = scenarioDefine[indexOfPckSubID];
-            }
-
-            newScenarioUnit.packageName = pckName.split("]")[0].replace("[", "");
-            newScenarioUnit.name = pckName.split("]")[1];
-            newScenarioUnit.subId = subId;
 
             switch (pckType) {
                 case RequestPacketString:
@@ -162,14 +126,12 @@ public class ScenarioUnitParser {
         }
 
         // Set communicationMethod
-        switch (newScenarioUnit.type)
-        {
+        switch (newScenarioUnit.type) {
             case ScenarioUnitType.Request:
             case ScenarioUnitType.RequestREST:
             case ScenarioUnitType.SetJMXQaCommand:
             case ScenarioUnitType.RequestRestCall:
             case ScenarioUnitType.Send:
-
                 newScenarioUnit.communicationMethod = CommunicationMethod.Request;
                 break;
 
@@ -177,7 +139,6 @@ public class ScenarioUnitParser {
             case ScenarioUnitType.ResponseREST:
             case ScenarioUnitType.GetJMXQaCommand:
             case ScenarioUnitType.Receive:
-
                 newScenarioUnit.communicationMethod = CommunicationMethod.Response;
                 break;
 
@@ -193,9 +154,9 @@ public class ScenarioUnitParser {
     }
 
     /**
-     *  Remove "_" in Key variables and convert to real variable name
-     *  when precompile protocol buffers and scenario files.
-     *  example) "seed_money" to "seedMoney"
+     * Remove "_" in Key variables and convert to real variable name
+     * when precompile protocol buffers and scenario files.
+     * example) "seed_money" to "seedMoney"
      *
      * @param s json string input
      * @return converted json string
@@ -205,15 +166,12 @@ public class ScenarioUnitParser {
         JsonParser jp = new JsonParser();
         JsonElement je = jp.parse(s);
 
-        if(je.isJsonObject())
-        {
+        if (je.isJsonObject()) {
             JsonObject jo = je.getAsJsonObject();
             Set<Map.Entry<String, JsonElement>> entrySet = jo.entrySet();
 
-            for(Map.Entry<String, JsonElement> entry : entrySet)
-            {
-                if(entry.getKey().contains("_"))
-                {
+            for (Map.Entry<String, JsonElement> entry : entrySet) {
+                if (entry.getKey().contains("_")) {
                     String oldVarName = entry.getKey();
                     String changedVarName = entry.getKey();
                     int posConnector = changedVarName.indexOf("_");
@@ -227,8 +185,7 @@ public class ScenarioUnitParser {
                     return convertProtoVarNameToRealVarName(temp);
                 }
 
-                if(entry.getValue().isJsonObject())
-                {
+                if (entry.getValue().isJsonObject()) {
                     String changedValueString =
                             convertProtoVarNameToRealVarName(entry.getValue().toString());
 
@@ -237,18 +194,14 @@ public class ScenarioUnitParser {
 
                     entry.setValue(jp.parse(temp));
                     convertProtoVarNameToRealVarName(temp);
-
                 }
             }
 
             return jo.toString();
-        }
-        else if (je.isJsonArray())
-        {
+        } else if (je.isJsonArray()) {
             JsonArray ja = je.getAsJsonArray();
 
-            for(JsonElement jsonElement : ja)
-            {
+            for (JsonElement jsonElement : ja) {
                 String oldJsonElement = jsonElement.toString();
                 String changedJsonElement = convertProtoVarNameToRealVarName(jsonElement.toString());
 
@@ -256,25 +209,24 @@ public class ScenarioUnitParser {
             }
 
             return ja.toString();
-        }
-        else
-        {
+        } else {
             return null;
         }
     }
 
     /**
      * Extract elements of extra-function from String, and then make Scenario Unit for extra-function call.
-     * @param s String line of JSon String
+     *
+     * @param s                 String line of JSon String
      * @param callExtraFunction handle exception.
      */
     public void extractExtraFunctionElement(final String s, ScenarioUnit callExtraFunction) {
         //#FUNCTION @@SeatNo=MSudda.getSeatNo(@@userId, @@subId)
         String returnVariableName = EmptyString;
-        String statement = s.replace(ExtraFunction,"");
+        String statement = s.replace(ExtraFunction, "");
 
         //@@SeatNo=MSudda.getSeatNo(@@userId, @@subId)
-        if(s.contains("=")) {
+        if (s.contains("=")) {
             returnVariableName = statement.split("=")[0].replace(UsingVariableDelimiter, EmptyString).trim();
             callExtraFunction.returnVariableName = returnVariableName;
             statement = statement.split("=")[1];
@@ -284,8 +236,8 @@ public class ScenarioUnitParser {
                 statement.indexOf("(") + 1,
                 statement.indexOf(")")
         ).split(",");
-        for(int i = 0; i < parameters.length; i++) {
-            parameters[i] =parameters[i].trim();
+        for (int i = 0; i < parameters.length; i++) {
+            parameters[i] = parameters[i].trim();
         }
 
         callExtraFunction.extraFunctionParameter = new LinkedList(Arrays.asList(parameters));

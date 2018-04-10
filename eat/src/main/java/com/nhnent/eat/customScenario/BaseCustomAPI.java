@@ -32,7 +32,7 @@ public abstract class BaseCustomAPI {
     protected HashMap<String, String> runtimeVar;
     protected String userId;
     protected ScenarioExecutionResult scenarioResult;
-    protected final HashMap<String,String> globalVariable = new HashMap<>();
+    protected final HashMap<String, String> globalVariable = new HashMap<>();
 
     List<IBaseCommunication> listCommunication;
 
@@ -53,10 +53,11 @@ public abstract class BaseCustomAPI {
 
     /**
      * Execute extra function(API)
+     *
      * @param scenarioResult Result of scenario execution
-     * @param scenario Scenario Unit to execution
+     * @param scenario       Scenario Unit to execution
      * @return If need to stop scenario execution return `False`, or continue return `True`
-     * @throws SuspendExecution throw exception for Actor(Fiber)
+     * @throws SuspendExecution     throw exception for Actor(Fiber)
      * @throws InterruptedException throw exception for Interrupted
      */
     public abstract Boolean executeExtraFunction(ScenarioExecutionResult scenarioResult, ScenarioUnit scenario)
@@ -65,10 +66,8 @@ public abstract class BaseCustomAPI {
     public Pair<String, byte[]> recvBodyPacket() throws SuspendExecution, InterruptedException {
 
         Pair<String, byte[]> recvPacket = null;
-        for(IBaseCommunication communication : listCommunication)
-        {
-            if(communication.isRegisteredScenarioType(ScenarioUnitType.Response))
-            {
+        for (IBaseCommunication communication : listCommunication) {
+            if (communication.isRegisteredScenarioType(ScenarioUnitType.Response)) {
                 recvPacket = communication.readPacket();
                 break;
             }
@@ -106,7 +105,7 @@ public abstract class BaseCustomAPI {
 
             decodedJson = StreamPacket.obj().packetToJson(userId, decodedPacket);
         } catch (Exception e) {
-            logger.error("failed to decode packet[{}]\n{}",packetClass,ExceptionUtils.getStackTrace(e));
+            logger.error("failed to decode packet[{}]\n{}", packetClass, ExceptionUtils.getStackTrace(e));
         }
         return decodedJson;
     }
@@ -117,12 +116,16 @@ public abstract class BaseCustomAPI {
 
         try {
 
-            sendPacket = StreamPacket.obj().jsonToPacket(userId, packetType, packageName, packetName, jsonContents);
+            ScenarioUnit scenarioUnit = new ScenarioUnit();
+            scenarioUnit.type = packetType;
+            scenarioUnit.packageName = packageName;
+            scenarioUnit.name = packetName;
+            scenarioUnit.json = jsonContents;
 
-            for(IBaseCommunication communication : listCommunication)
-            {
-                if(communication.isRegisteredScenarioType(ScenarioUnitType.Request))
-                {
+            sendPacket = StreamPacket.obj().jsonToPacket(userId, scenarioUnit);
+
+            for (IBaseCommunication communication : listCommunication) {
+                if (communication.isRegisteredScenarioType(ScenarioUnitType.Request)) {
                     communication.transferPacket(sendPacket);
                     break;
                 }
