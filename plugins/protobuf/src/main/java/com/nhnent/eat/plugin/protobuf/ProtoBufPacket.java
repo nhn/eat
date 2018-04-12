@@ -135,10 +135,11 @@ public class ProtoBufPacket implements IStreamPacket {
             msg = ProtobufDescPool.obj().JsonToMessage(packageName + "." + packetName, jsonContents);
 
             message = (DynamicMessage) msg.build();
-            if(scenarioUnit.dest != EmptyString) {
-                serviceID = scenarioUnit.dest;
-            } else {
+
+            if(scenarioUnit.dest == null || scenarioUnit.dest.equals(EmptyString)) {
                 serviceID = ProtobufConfig.obj().getProtobuf().getServiceId();
+            } else {
+                serviceID = scenarioUnit.dest;
             }
             packet = Packet.generateTransferPacket(serviceID, packetType, "", message);
         } catch (Exception e) {
@@ -164,7 +165,8 @@ public class ProtoBufPacket implements IStreamPacket {
         int headerSize = (int)packetBytes[0];
         int bodySize = packetBytes.length - 1 - headerSize;
 
-        return Arrays.copyOfRange(packetBytes, headerSize, headerSize + bodySize);
+        //index 0 is size of header. so, let's shift 1 byte to read body.
+        return Arrays.copyOfRange(packetBytes, headerSize + 1, headerSize + bodySize + 1);
     }
 
     private static final int DEFAULT_BUFFER_SIZE = 4096;
