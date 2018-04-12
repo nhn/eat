@@ -23,10 +23,18 @@
 
 #BEGIN_LOOP 3
 
+    -- Request packet using JSon definition
     #Request:[TUTORIAL]Basic.RequestGameDecision
     {
         "decision" : 2
     }
+
+    #Response:[TUTORIAL]Basic.ResponseGameResult
+    {
+    }
+
+    -- Request packet using CustomAPI
+    #FUNCTION RequestGameDecision()
 
     #Response:[TUTORIAL]Basic.ResponseGameResult
     {
