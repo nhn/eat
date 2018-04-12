@@ -63,6 +63,13 @@ public abstract class BaseCustomAPI {
     public abstract Boolean executeExtraFunction(ScenarioExecutionResult scenarioResult, ScenarioUnit scenario)
             throws SuspendExecution, InterruptedException;
 
+    /**
+     * Receive packet from server
+     *
+     * @return Received packet from server
+     * @throws SuspendExecution     throw exception for Actor(Fiber)
+     * @throws InterruptedException throw exception for Interrupted
+     */
     public Pair<String, byte[]> recvBodyPacket() throws SuspendExecution, InterruptedException {
 
         Pair<String, byte[]> recvPacket = null;
@@ -95,6 +102,13 @@ public abstract class BaseCustomAPI {
         return recvPacket;
     }
 
+    /**
+     * Decode packet from packet bytes, and return Json string
+     *
+     * @param packetClass packet class
+     * @param packetData  packet bytes
+     * @return Json string
+     */
     public String decodePacket(String packetClass, byte[] packetData) {
         String decodedJson = "";
         Class<?> clsPck;
@@ -110,6 +124,18 @@ public abstract class BaseCustomAPI {
         return decodedJson;
     }
 
+    /**
+     * Send packet to server
+     *
+     * @param scenarioUnit scenario unit
+     *                     example)
+     *                     ScenarioUnit scenarioUnit = new ScenarioUnit();
+     *                     scenarioUnit.type = packetType; //Necessary
+     *                     scenarioUnit.packageName = packageName; //Necessary
+     *                     scenarioUnit.name = packetName; //Necessary
+     *                     scenarioUnit.json = jsonContents; //Necessary
+     *                     scenarioUnit.dest = serviceId //Optional(if omitted, it will fill with configuration item)
+     */
     public void sendPacketToServer(ScenarioUnit scenarioUnit) {
         byte[] sendPacket = null;
 
@@ -123,7 +149,7 @@ public abstract class BaseCustomAPI {
                     break;
                 }
             }
-            
+
         } catch (Exception e) {
             logger.error(ExceptionUtils.getStackTrace(e));
         }
