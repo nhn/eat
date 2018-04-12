@@ -110,17 +110,10 @@ public abstract class BaseCustomAPI {
         return decodedJson;
     }
 
-    public void sendPacketToServer(String packetType, String packageName,
-                                   String packetName, String jsonContents) {
+    public void sendPacketToServer(ScenarioUnit scenarioUnit) {
         byte[] sendPacket = null;
 
         try {
-
-            ScenarioUnit scenarioUnit = new ScenarioUnit();
-            scenarioUnit.type = packetType;
-            scenarioUnit.packageName = packageName;
-            scenarioUnit.name = packetName;
-            scenarioUnit.json = jsonContents;
 
             sendPacket = StreamPacket.obj().jsonToPacket(userId, scenarioUnit);
 
@@ -130,6 +123,7 @@ public abstract class BaseCustomAPI {
                     break;
                 }
             }
+            
         } catch (Exception e) {
             logger.error(ExceptionUtils.getStackTrace(e));
         }
@@ -141,13 +135,13 @@ public abstract class BaseCustomAPI {
 
                 logger.info("[userId:{}][Transfer Packet][{}]\n{}",
                         userInfo.get(),
-                        packetName,
-                        decodePacket(packetName, bodyPacket)
+                        scenarioUnit.name,
+                        decodePacket(scenarioUnit.name, bodyPacket)
                 );
             } else {
                 logger.info("[userId:{}][Transfer Packet][{}]",
                         userInfo.get(),
-                        packetName);
+                        scenarioUnit.name);
             }
         }
     }
