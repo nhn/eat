@@ -144,5 +144,5 @@ And if you want add more communication method, you can add it using plugin inter
 
 ## 📜 License
 
-This software is licensed under the [MIT](https://github.nhnent.com/ngt/eat/blob/develop/LICENSE) © [NHN Ent.](https://github.com/nhnent)
+This software is licensed under the [MIT](https://github.nhnent.com/ngt/eat/blob/develop/LICENSE) © [NHN](https://github.com/nhnent)
 
